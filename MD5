@@ -1,0 +1,14 @@
+487600061b89dbac5419fefa05820187 *DESCRIPTION
+21d110929d958c77fbff40237a38d314 *NAMESPACE
+e618118cc2fe0294249e8d0411e74c63 *R/ttsAutoML.R
+ff73ea0fd2dcb375677adf28b9388fae *R/ttsCaret.R
+66c59eff2945078084563e487bbc6f7e *R/ttsLSTM.R
+a32575bebf6828c9eaf448e61c0b5b98 *R/ttsPredict.R
+60297c3a79f26c80f91234c4616d4161 *data/ES_15m.rda
+3fb59dc2e7fc2b12c1e50424180f2efd *data/ES_Daily.rda
+43f1c3f49269af421567c632835fcdea *data/macrodata.rda
+35403e17728d4e7e10cebda1dfa99dba *man/data-sets.Rd
+40768c7c82c75eb171eaa784f012658c *man/iForecast.Rd
+12b463fbca80129fe4ccf466a0dae0a4 *man/ttsAutoML.Rd
+23a3257a0c109d0cae5976c1775884ef *man/ttsCaret.Rd
+b5c3bbf93b4d36ef73a0b37d763b66e5 *man/ttsLSTM.Rd
