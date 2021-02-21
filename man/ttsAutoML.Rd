@@ -15,7 +15,7 @@ ttsAutoML(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30)
 
 \arguments{
   \item{y}{
-The time series vector of target variable, or the dependent variable, with \code{zoo} format.
+The time series vector of target variable, or the dependent variable, with \code{zoo} format, must have dimension. y can be either binary or continuous.
 }
 
   \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.
@@ -83,8 +83,8 @@ train.end<-"2008-12-01"
 #P1<-iForecast(Model=autoML,newdata=testData2,type="staticfit")
 #P2<-iForecast(Model=autoML,newdata=testData2,type="recursive")
 
-#tail(cbind(testData2[,1],P1,P2))
-
+#tail(cbind(testData2[,1],P1))
+#tail(cbind(testData2[,1],P2))
 
 
 }

@@ -26,7 +26,7 @@ ttsCaret(
 
 \arguments{
   \item{y}{
-The time series vector of target variable, or the dependent variable, with \code{zoo} format, must have dimension.
+The time series vector of target variable, or the dependent variable, with \code{zoo} format, must have dimension. y can be either binary or continuous.
 }
 
   \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.

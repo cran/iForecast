@@ -73,14 +73,42 @@ if (p==0) {
   } else {DF <- DF}
 
 
-  trainData=window(DF,start=train.start,end=train.end)
+
+  trainData0=window(DF,start=train.start,end=train.end)
+
+  if (max(diff(unique(y)))==min(diff(unique(y)))) {
+    trainData=as.data.frame(unclass(trainData0))
+      if(is.double(trainData$y)) {
+      trainData$y=as.factor(trainData$y)
+      levels(trainData$y)=LETTERS[seq(length(levels(trainData$y)))]
+      } else {trainData$y=as.factor(trainData$y)}
+
+      } else {trainData=trainData0}
 
   dep=colnames(DF)[1]
+
   eq=as.formula(paste(dep,"~."))
 
   if (method == "svm") {
-output <- caret::train(eq, data = trainData, method = "svmRadial",
-        tuneLength = tuneLength, trControl = trControl)
+    ### finding optimal value of a tuning parameter
+    sigDist <- kernlab::sigest(eq,data = trainData, frac = 1)
+    ### creating a grid of two tuning parameters, .sigma comes from the earlier line. we are trying to find best value of .C
+    svmTuneGrid <- data.frame(.sigma = rep(sigDist[1],10), .C = 2^(-2:7))
+#    set.seed(1056)
+          if (max(diff(unique(y)))==min(diff(unique(y)))){
+                  output <- caret::train(eq,data = trainData,
+                           method = "svmRadial",
+                           preProc = c("center", "scale"),
+                           tuneGrid = svmTuneGrid,
+                           trControl = trainControl(method = "repeatedcv", repeats = 5,
+                                                    classProbs =  TRUE))
+                  } else {output <- caret::train(eq,data = trainData,
+                                                 method = "svmRadial",
+                                                 preProc = c("center", "scale"),
+                                                 tuneGrid = svmTuneGrid,
+                                                 trControl = trainControl(method = "repeatedcv", repeats = 5))
+
+                                                    }
   } else {output <- caret::train(eq, data = trainData, method=method,
                                 tuneLength = tuneLength, trControl = trControl)  }
 

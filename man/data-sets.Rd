@@ -7,14 +7,16 @@
 
 \alias{macrodata}
 
+\alias{bc}
+
 \title{Economic and Financial Data Sets}
 
 \encoding{UTF-8}
 
 \description{
 
-ES_15m is 15-min realized absolute variance of e-mini S&P 500. macrodata contains monthly US unemployment(unrate), ES_Daily is daily realized absolute variance of e-mini S&P 500. macrodata contains monthly US unemployment(unrate) and  and year-to-year changes in three regional business cycle indices (OED, NAFTA, and G7).
-
+ES_15m is 15-min realized absolute variance of e-mini S&P 500. macrodata contains monthly US unemployment(unrate), ES_Daily is daily realized absolute variance of e-mini S&P 500. macrodata contains monthly US unemployment(unrate) and  and year-to-year changes in three regional business cycle indices (OECD, NAFTA, and G7).
+bc contains monthly business cycle data, bc is binary indicator(0=recession, 1=boom) of Taiwan's business cycle phases, IPI_TWN is industrial production index of Taiwan, LD_OECD, LD_G7, and LD_NAFTA are leading indicators of OECD, G7 and NAFTA regions; all four are monthly rate of changes.
 }
 
 
@@ -22,6 +24,7 @@ ES_15m is 15-min realized absolute variance of e-mini S&P 500. macrodata contain
 data(ES_15m)
 data(macrodata)
 data(ES_Daily)
+data(bc)
 }
 
 

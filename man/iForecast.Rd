@@ -37,7 +37,7 @@ This function generates forecasts of ttsCaret,ttsAutoML, and ttsLSTM.
 
 
 \value{
-\item{prediction}{The forecasted time series}
+\item{prediction}{The forecasted time series target variable. For binary case, it returns both porbabilities and class.}
 }
 
 
@@ -49,7 +49,7 @@ Ho Tsung-wu <tsungwu@ntnu.edu.tw>, College of Management, National Taiwan Normal
 \examples{
 # Cross-validation takes time, example below is commented.
 ## Machine Learning by library(caret)
-#Case 1. Low frequency
+#Case 1. Low frequency, regression type
 data("macrodata")
 dep <- macrodata[569:669,"unrate",drop=FALSE]
 ind <- macrodata[569:669,-1,drop=FALSE]
@@ -64,9 +64,28 @@ Caret <- ttsCaret(y=dep, x=ind, arOrder=c(1), xregOrder=c(1),
 P1 <- iForecast(Model=Caret,newdata=testData1,type="staticfit")
 P2 <- iForecast(Model=Caret,newdata=testData1,type="recursive")
 
-#tail(cbind(testData1[,1],P1,P2))
+#tail(cbind(testData1[,1],P1))
+#tail(cbind(testData1[,1],P2))
 
+#Case 2. Low frequency, binary type
+data(bc) #binary dependent variable, business cycle phases
+dep=bc[,1,drop=FALSE]
+ind=bc[,-1]
 
+train.end=as.character(rownames(dep))[as.integer(nrow(dep)*0.8)]
+test.start=as.character(rownames(dep))[as.integer(nrow(dep)*0.8)+1]
+
+#Caret = ttsCaret(y=dep, x=ind, arOrder=c(1), xregOrder=c(1), method=models,
+#                   tuneLength =10, train.end, type=type)
+
+#testData1=window(Caret$data,start=test.start,end=end(Caret$data))
+
+#head(Caret$dataused)
+#P1=iForecast(Model=Caret,newdata=testData1,type="staticfit")
+#P2=iForecast(Model=Caret,newdata=testData1,type="recursive")
+
+#tail(cbind(testData1[,1],P1),10)
+#tail(cbind(testData1[,1],P2),10)
 
 }
 

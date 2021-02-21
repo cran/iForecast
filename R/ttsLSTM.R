@@ -1,5 +1,8 @@
-ttsLSTM <- function (y,x=NULL,train.end,arOrder=2,xregOrder=0,type, memoryLoops=10){
+ttsLSTM <- function (y,x=NULL,train.end,arOrder=2,xregOrder=0,type, memoryLoops=10,dim3=5){
   if (!is.zoo(y)) {print("The data must be a zoo object.")}
+  if (max(diff(unique(y)))==min(diff(unique(y))))
+  {stop("Binary dependent variable is not allowed for current version")}
+
 
   y=timeSeries::as.timeSeries(y)
 
@@ -103,7 +106,7 @@ ttsLSTM <- function (y,x=NULL,train.end,arOrder=2,xregOrder=0,type, memoryLoops=
   dimnames(test.new)=NULL
 
   SHAPE=ncol(train.new)
-  k=5
+  k=dim3
   x.train = array(data = train.new[,-1], dim = c(nrow(train.new), SHAPE, k))
   y.train = array(data = train.new[,1], dim = c(nrow(train.new), 1))
 
@@ -112,9 +115,32 @@ ttsLSTM <- function (y,x=NULL,train.end,arOrder=2,xregOrder=0,type, memoryLoops=
 
   model <- keras::keras_model_sequential()
 
+#if (max(diff(unique(y)))==min(diff(unique(y)))) {
+
+#    model %>%
+#    keras::layer_lstm(units = 128,
+#               input_shape = c(SHAPE, k),
+#               batch_size = batch.size,
+#               return_sequences = TRUE,
+#               stateful = TRUE) %>%
+#    keras::layer_dropout(rate = 0.5) %>%
+#    keras::layer_lstm(units = 128,
+#               return_sequences = FALSE,
+#               stateful = TRUE) %>%
+#    keras::layer_dropout(rate = 0.5) %>%
+#    keras::layer_dense(units=64, activation = "relu") %>%
+#    keras::layer_dense(units=32) %>%
+#    keras::layer_dense(units = 1, activation = "tanh")
+
+#  model %>%
+#    keras::compile(optimizer = "adam",
+#            loss = "binary_crossentropy",
+#            metrics = "binary_accuracy")
+
+#} else {
   model %>%
     keras::layer_lstm(units = 100,
-                      input_shape = c(SHAPE, 5),
+                      input_shape = c(SHAPE, k),
                       batch_size = batch.size,
                       return_sequences = TRUE,
                       stateful = TRUE) %>%
@@ -127,6 +153,10 @@ ttsLSTM <- function (y,x=NULL,train.end,arOrder=2,xregOrder=0,type, memoryLoops=
 
   model %>%
     keras::compile(loss = 'mae', optimizer = 'adam')
+
+
+#}
+
 
   for(i in 1:memoryLoops){
     model %>% keras::fit(x = x.train,

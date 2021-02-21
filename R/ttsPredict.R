@@ -32,21 +32,28 @@ iForecast <- function(Model,newdata,type) {
   testData <- timeSeries::as.timeSeries(newdata)
   output <- Model$output
   arOrder <- Model$arOrder
+  Y.check=Model$data[,1]
 
   if (type=="staticfit") {
   # Static multistep forecasting by direct fit
+    if (max(diff(unique(Y.check)))==min(diff(unique(Y.check)))) {
+      static.pred <- as.matrix(as.integer(predict(output,testData,type="raw"))-1)
+      colnames(static.pred) <- "class"
+      static.pred.prob <-predict(output,testData,type="prob")
+  colnames(static.pred.prob)=factor(seq(length(levels(as.factor(Y.check))))-1)
+      static.pred=cbind(static.pred,static.pred.prob )
+      } else {
   static.pred <- as.matrix(predict(output,testData))
+  colnames(static.pred) <- "staticfit"
+  }
+
   rownames(static.pred) <- rownames(testData)
   prediction <- timeSeries::as.timeSeries(static.pred)
 
-  colnames(prediction) <- "staticfit"
 
-  } else if (type=="recursive") {
+  } else if (type=="recursive") {  # Recursive Forecasts
 
-
-  # Recursive Forecasts
-  # Predict test data: Recursive Forecasts
-  if (min(arOrder) == 0L) {print("AR Order cannot be 0 for recursive forecasts.")
+    if (min(arOrder) == 0L) {print("AR Order cannot be 0 for recursive forecasts.")
 
     } else {
   DF0 <- Model$data
@@ -65,8 +72,42 @@ iForecast <- function(Model,newdata,type) {
     ahead=nrow(ARX)
 
     recursive.pred=NULL
+    recursive.pred.prob=NULL
+
+
+    if (max(diff(unique(Y.check)))==min(diff(unique(Y.check)))) {
+      for (i in 1:ahead) {#i=1
+      if(length(LX.names)==0) {
+        y0=as.numeric(predict(output,ARX[i,],type="raw"))-1
+        y0.prob_=predict(output,ARX[i,],type="prob")
+      } else {
+        y0=as.numeric(predict(output,ARX[i,c(LY.names,LX.names)],type="raw"))-1
+        y0.prob_=predict(output,ARX[i,c(LY.names,LX.names)],type="prob")
+      }
+
+        recursive.pred.prob=rbind(recursive.pred.prob,y0.prob_)
+
+      if (i < ahead) if (plags==1) {ARX[i+1,ar.names]=y0} else
+      { ARX[i+1,ar.names]=c(y0,as.numeric(ARX[i,1:(plags-1)]))}
+
+      recursive.pred=c(recursive.pred,y0)
+      }
+      recursive.pred=as.matrix(recursive.pred[-1])
+
+    rownames(recursive.pred)=rownames(testData)
+    prediction=timeSeries::as.timeSeries(recursive.pred)
+
+  colnames(prediction)="class"
+
+colnames(recursive.pred.prob)=factor(seq(length(levels(as.factor(Y.check))))-1)
+prediction=cbind(prediction,recursive.pred.prob[-1,])
+
+
+      } else {
+
     for (i in 1:ahead) {#i=1
-      if(length(LX.names)==0) {y0=as.numeric(predict(output,ARX[i,]))
+      if(length(LX.names)==0) {
+        y0=as.numeric(predict(output,ARX[i,]))
       } else {
         y0=as.numeric(predict(output,ARX[i,c(LY.names,LX.names)]))
       }
@@ -76,16 +117,14 @@ iForecast <- function(Model,newdata,type) {
 
       recursive.pred=c(recursive.pred,y0)
     }
-
-
     recursive.pred=as.matrix(recursive.pred[-1])
   rownames(recursive.pred)=rownames(testData)
   prediction=timeSeries::as.timeSeries(recursive.pred)
   colnames(prediction)="recursive"
+}
   }
   }
 
-prediction
 
   return(prediction)
 
