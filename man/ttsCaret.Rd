@@ -96,16 +96,16 @@ dep <- macrodata[569:669,"unrate",drop=FALSE]
 ind <- macrodata[569:669,-1,drop=FALSE]
 train.end <- "2018-12-01"# Choosing the end dating of train
 
-models <- c("svm","rf","rpart","gamboost","BstLm","bstSm","blackboost")[1]
+models <- c("svm","rf","rpart","glm")[3]
 type <- c("none","trend","season","both")[1]
-Caret <- ttsCaret(y=dep, x=ind, arOrder=c(1), xregOrder=c(1),
+Caret <- ttsCaret(y=dep, x=NULL, arOrder=c(1), xregOrder=c(1),
  method=models, tuneLength =1, train.end, type=type,
  trControl= trainControl(method = "cv"))
  testData1 <- window(Caret$data,start="2019-01-01",end=end(Caret$data))
 P1 <- iForecast(Model=Caret,newdata=testData1,type="staticfit")
 P2 <- iForecast(Model=Caret,newdata=testData1,type="recursive")
 
-#tail(cbind(testData1[,1],P1,P2))
+tail(cbind(testData1[,1],P1,P2))
 
 #Case 2. High frequency
 #head(ES_15m)

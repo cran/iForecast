@@ -55,7 +55,7 @@ dep <- macrodata[569:669,"unrate",drop=FALSE]
 ind <- macrodata[569:669,-1,drop=FALSE]
 train.end <- "2018-12-01"# Choosing the end dating of train
 
-models <- c("svm","rf","rpart","gamboost","BstLm","bstSm","blackboost")[1]
+models <- c("svm","rf","rpart","gamboost","BstLm","bstSm","blackboost")[3]
 type <- c("none","trend","season","both")[1]
 Caret <- ttsCaret(y=dep, x=ind, arOrder=c(1), xregOrder=c(1),
  method=models, tuneLength =1, train.end, type=type,
