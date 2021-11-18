@@ -1,8 +1,8 @@
 Package: iForecast
 Type: Package
 Title: Machine Learning Time Series Forecasting
-Version: 1.0.3
-Date: 2021-07-30
+Version: 1.0.4
+Date: 2021-11-18
 Author: Ho Tsung-wu
 Maintainer: Ho Tsung-wu <tsungwu@ntnu.edu.tw>
 Description: Compute both static and recursive time series forecasts of machine learning models.
@@ -14,6 +14,6 @@ Imports: magrittr
 Suggests: data.table, DescTools, forecast, h2o, keras, kernlab,
         lubridate, tensorflow, tibble, timeSeries, timeDate, timetk
 NeedsCompilation: no
-Packaged: 2021-07-30 05:57:02 UTC; badal
+Packaged: 2021-11-18 03:51:34 UTC; badal
 Repository: CRAN
-Date/Publication: 2021-07-30 06:20:02 UTC
+Date/Publication: 2021-11-18 06:10:02 UTC

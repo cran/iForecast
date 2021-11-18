@@ -1,7 +1,7 @@
-rollingWindows <- function(x,training="18m",testing = "6m") {
-period=training
-by=testing
-  periodLength = as.numeric(substr(period, 1, nchar(period) - 
+rollingWindows <- function(x,estimation="18m",by = "6m") {
+period=estimation
+by=by
+  periodLength = as.numeric(substr(period, 1, nchar(period) -
                                      1))
   periodUnit = substr(period, nchar(period), nchar(period))
   byLength = as.numeric(substr(by, 1, nchar(by) - 1))
@@ -12,14 +12,14 @@ by=testing
   startPositions = unique(positions)
   endPositions = unique(positions)
   numberOfPositions = length(startPositions)
-  startSeq <- seq(from = 1, to = (numberOfPositions - periodLength + 
+  startSeq <- seq(from = 1, to = (numberOfPositions - periodLength +
                                     1), by = byLength)
   startDates = startPositions[startSeq]
-  endSeq <- seq(from = periodLength, to = numberOfPositions, 
+  endSeq <- seq(from = periodLength, to = numberOfPositions,
                 by = byLength)
   endDates = endPositions[endSeq]
   windows = list(from = startDates, to = endDates)
-  attr(windows, "control") = list(start = start(positions), 
+  attr(windows, "control") = list(start = start(positions),
                                   end = end(positions), period = period, by = by)
   windows
 }

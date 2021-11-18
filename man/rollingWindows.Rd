@@ -6,10 +6,10 @@
 \title{Rolling timeframe for time series anaysis}
 
 \description{
-It extracts time stamp from a timeSeries object and separates the time into in-sample training and out-of-sample testing ranges.
+It extracts time stamp from a timeSeries object and separates the time into in-sample training and out-of-sample validation ranges.
 }
 \usage{
-rollingWindows(x,training="18m",testing = "6m")
+rollingWindows(x,estimation="18m",by = "6m")
 }
 
 \arguments{
@@ -18,11 +18,11 @@ rollingWindows(x,training="18m",testing = "6m")
 }
 
 
-  \item{training}{The range of insample training period, the default is 18 months(18m), where the k-fold cross-section is performed.
+  \item{estimation}{The range of insample estimation period, the default is 18 months(18m), where the k-fold cross-section is performed.
 
 }
 
- \item{testing}{The range of out-of-sample testing period, the default is 6 months(6m).
+ \item{by}{The range of out-of-sample validation/testing period, the default is 6 months(6m).
 
 }
 
@@ -51,7 +51,7 @@ data(macrodata)
 dep=macrodata[,1,drop=FALSE]
 ind=macrodata[,-1,drop=FALSE]
 
-timeframe=rollingWindows(dep,training="300m",testing="6m")
+timeframe=rollingWindows(dep,estimation="300m",by="6m")
 FROM=timeframe$from
 TO=timeframe$to
 

@@ -49,7 +49,7 @@ ttsAutoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
   }  else {ar=ar0[,paste0("ar",arOrder)]}
 
 
-  if (is.null(x)) {X=datasetX} else {
+  if (is.null(x)) {X=NULL} else {
 
     L.ID=paste0("L",xregOrder)
     IDx=NULL
@@ -79,14 +79,14 @@ ttsAutoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
   data_tbl_aug=tibble::as_tibble(na.omit(cbind(y,ar))) #The first obs is lost
 }
 
-
+if (!is.null(x)) {data_tbl_aug=cbind(data_tbl_aug,X[-1,])}
+  
   data_tbl_clean=data_tbl_aug
 
   data_tbl_clean=as.data.frame(data_tbl_clean)
   rownames(data_tbl_clean)=dateID
 
   DF=timeSeries::as.timeSeries(data_tbl_clean)
-
   trainData = window(DF,start=train.start,end=train.end)
   testData = window(DF,start=test.start,end=test.end)
 
@@ -111,7 +111,7 @@ ttsAutoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
   # Extract leader model
   automl_leader <- automl_models_h2o@leader
 
-  DF0=tibble::as_tibble(na.omit(cbind(y,ar0,X, timeFeatures))) #Short of the first obs
+  DF0=tibble::as_tibble(na.omit(cbind(y,ar0, timeFeatures,X))) #Short of the first obs
   DF0 = as.data.frame(DF0)
   rownames(DF0)=dateID
   DF0=timeSeries::as.timeSeries(DF0)

@@ -1,4 +1,4 @@
-ttsLSTM <- function (y,x=NULL,train.end,arOrder=2,xregOrder=0,type, memoryLoops=10,dim3=5){
+ttsLSTM <- function (y,x=NULL,train.end,arOrder=1,xregOrder=0,type, memoryLoops=10,shape=NULL,dim3=5){
   if (!is.zoo(y)) {print("The data must be a zoo object.")}
   if (max(diff(unique(y)))==min(diff(unique(y))))
   {stop("Binary dependent variable is not allowed for current version")}
@@ -105,7 +105,7 @@ ttsLSTM <- function (y,x=NULL,train.end,arOrder=2,xregOrder=0,type, memoryLoops=
   test.new=as.matrix(test)  #remove date index
   dimnames(test.new)=NULL
 
-  SHAPE=ncol(train.new)
+  if(is.null(shape)) {SHAPE=ncol(train.new)} else {SHAPE=shape}
   k=dim3
   x.train = array(data = train.new[,-1], dim = c(nrow(train.new), SHAPE, k))
   y.train = array(data = train.new[,1], dim = c(nrow(train.new), 1))

@@ -79,7 +79,7 @@ train.end<-"2008-12-01"
 
 #autoML <- ttsAutoML(y=dep, x=ind, train.end,arOrder=c(2,4),
 # xregOrder=c(0,1,3), maxSecs =30)
-#testData2 <- window(autoML$data,start="2009-01-01",end=end(autoML$data))
+#testData2 <- window(autoML$dataused,start="2009-01-01",end=end(autoML$data))
 #P1<-iForecast(Model=autoML,newdata=testData2,type="staticfit")
 #P2<-iForecast(Model=autoML,newdata=testData2,type="recursive")
 
