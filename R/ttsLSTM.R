@@ -1,8 +1,8 @@
-ttsLSTM <- function (y,x=NULL,train.end,arOrder=1,xregOrder=0,type, memoryLoops=10,shape=NULL,dim3=5){
-  if (!is.zoo(y)) {print("The data must be a zoo object.")}
-  if (max(diff(unique(y)))==min(diff(unique(y))))
-  {stop("Binary dependent variable is not allowed for current version")}
-
+ttsLSTM <- function (y,x=NULL,train.end,arOrder=1,xregOrder=0,type,
+                     memoryLoops=10,shape=NULL,dim3=5,batch.range=2:7,batch.size=NULL){
+#  if (!is.zoo(y)) {print("The data had better be a zoo object.")}
+if (is.null(batch.range) & is.null(batch.size) | !is.null(batch.range) & !is.null(batch.size)){
+  print("Either batch.range or batch.size must be NULL.") }
 
   y=timeSeries::as.timeSeries(y)
 
@@ -75,69 +75,64 @@ ttsLSTM <- function (y,x=NULL,train.end,arOrder=1,xregOrder=0,type, memoryLoops=
   } else {DF <- DF}
 
 
-  #  suppressMessages(timeFeatures <- timetk::tk_augment_timeseries_signature(data.frame(date=time(y))))
-  #  rownames(timeFeatures)=rownames(y)
-  #timeFeatures=as.timeSeries(timeFeatures)
-
   ## Input variables data
   newData= timeSeries::as.timeSeries(DF)
 
   trainData=window(newData,start=train.start,end=train.end)
-  testData=window(newData,start=test.start,end=test.end)
 
   train0 = data.frame(value = as.numeric(trainData[,1]), trainData[,-1])
   train = train0[complete.cases(train0), ]
 
-  test0 = data.frame(value = as.numeric(testData[,1]), testData[,-1])
-  test = test0[complete.cases(test0), ]
+  ## Lines below determines batch.size that can be perfectly divided by nrow(train)
 
-  #DescTools::LCM(nrow(train),nrow(test))
-  batch.size = DescTools::GCD(nrow(train),nrow(test))
-  nrow(train)/batch.size; nrow(test)/batch.size
+  if (is.null(batch.size)){batch.size = batch.range[which(mod(nrow(train),batch.range)==0)[1]]
 
-  names(train)
+  } else {batch.size =batch.size}
+
+  if (is.na(batch.size)) {
+    train=train[-c(1:batch.range[which.min(mod(nrow(train),batch.range))]),]
+
+  }
+  batch.size = batch.range[which(mod(nrow(train),batch.range)==0)[1]]
+
   ####################################
   ###=====LSTM modeling begins=====###
   ####################################
 
   train.new=as.matrix(train) #remove date index
   dimnames(train.new)=NULL
-  test.new=as.matrix(test)  #remove date index
-  dimnames(test.new)=NULL
 
   if(is.null(shape)) {SHAPE=ncol(train.new)} else {SHAPE=shape}
   k=dim3
   x.train = array(data = train.new[,-1], dim = c(nrow(train.new), SHAPE, k))
   y.train = array(data = train.new[,1], dim = c(nrow(train.new), 1))
 
-  x.test = array(data = test.new[,-1], dim = c(nrow(test.new), SHAPE, k))
-  y.test = array(data = test.new[,1], dim = c(nrow(test.new), 1))
 
   model <- keras::keras_model_sequential()
 
-#if (max(diff(unique(y)))==min(diff(unique(y)))) {
+if (max(diff(unique(y)))==min(diff(unique(y)))) {
 
-#    model %>%
-#    keras::layer_lstm(units = 128,
-#               input_shape = c(SHAPE, k),
-#               batch_size = batch.size,
-#               return_sequences = TRUE,
-#               stateful = TRUE) %>%
-#    keras::layer_dropout(rate = 0.5) %>%
-#    keras::layer_lstm(units = 128,
-#               return_sequences = FALSE,
-#               stateful = TRUE) %>%
-#    keras::layer_dropout(rate = 0.5) %>%
-#    keras::layer_dense(units=64, activation = "relu") %>%
-#    keras::layer_dense(units=32) %>%
-#    keras::layer_dense(units = 1, activation = "tanh")
+    model %>%
+    keras::layer_lstm(units = 128,
+               input_shape = c(SHAPE, k),
+               batch_size = batch.size,
+               return_sequences = TRUE,
+               stateful = TRUE) %>%
+    keras::layer_dropout(rate = 0.5) %>%
+    keras::layer_lstm(units = 128,
+               return_sequences = FALSE,
+               stateful = TRUE) %>%
+    keras::layer_dropout(rate = 0.5) %>%
+    keras::layer_dense(units=64, activation = "relu") %>%
+    keras::layer_dense(units=32) %>%
+    keras::layer_dense(units = 1, activation = "sigmoid")
 
-#  model %>%
-#    keras::compile(optimizer = "adam",
-#            loss = "binary_crossentropy",
-#            metrics = "binary_accuracy")
+  model %>%
+    keras::compile(optimizer = "adam",
+            loss = "binary_crossentropy",
+            metrics = "binary_accuracy")
 
-#} else {
+} else {
   model %>%
     keras::layer_lstm(units = 100,
                       input_shape = c(SHAPE, k),
@@ -155,7 +150,7 @@ ttsLSTM <- function (y,x=NULL,train.end,arOrder=1,xregOrder=0,type, memoryLoops=
     keras::compile(loss = 'mae', optimizer = 'adam')
 
 
-#}
+}
 
 
   for(i in 1:memoryLoops){

@@ -1,5 +1,5 @@
 ttsAutoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
-  if (!is.zoo(y)) {print("The data must be timeSeries object.")}
+#  if (!is.zoo(y)) {print("The data had better be a zoo object.")}
 
   Sys.setlocale(category = "LC_ALL", locale = "English_United States.1252")
   h2o::h2o.init()        # Fire up h2o
@@ -80,7 +80,7 @@ ttsAutoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
 }
 
 if (!is.null(x)) {data_tbl_aug=cbind(data_tbl_aug,X[-1,])}
-  
+
   data_tbl_clean=data_tbl_aug
 
   data_tbl_clean=as.data.frame(data_tbl_clean)

@@ -1,6 +1,8 @@
-ttsCaret <- function(y,x=NULL, method,train.end,arOrder=2,xregOrder=0,type,tuneLength=10,trControl=trainControl(method = "cv")) {
+ttsCaret <- function(y,x=NULL, method,train.end,arOrder=2,xregOrder=0,
+                     type,tuneLength=10,preProcess = NULL,resampling="boot",
+                     Number=NULL,Repeat=NULL) {
 
-  if (!is.zoo(y)) {print("Data must be a zoo object.")}
+#  if (!is.zoo(y)) {print("Data had better be a zoo object.")}
 
   y=timeSeries::as.timeSeries(y)
 
@@ -75,7 +77,6 @@ if (p==0) {
 
 
   trainData0=window(DF,start=train.start,end=train.end)
-
   if (max(diff(unique(y)))==min(diff(unique(y)))) {
     trainData=as.data.frame(unclass(trainData0))
       if(is.double(trainData$y)) {
@@ -88,31 +89,40 @@ if (p==0) {
   dep=colnames(DF)[1]
 
   eq=as.formula(paste(dep,"~."))
-
+  resampling=resampling
   if (method == "svm") {
     ### finding optimal value of a tuning parameter
-    sigDist <- kernlab::sigest(eq,data = trainData, frac = 1)
+    sigDist <- kernlab::sigest(eq,data = trainData, frac = 0.75)
     ### creating a grid of two tuning parameters, .sigma comes from the earlier line. we are trying to find best value of .C
-    svmTuneGrid <- data.frame(.sigma = rep(sigDist[1],10), .C = 2^(-2:7))
+    svmTuneGrid <- data.frame(.sigma = rep(sigDist[2],10), .C = 2^(-2:7))
 #    set.seed(1056)
-          if (max(diff(unique(y)))==min(diff(unique(y)))){
-                  output <- caret::train(eq,data = trainData,
-                           method = "svmRadial",
-                           preProc = c("center", "scale"),
-                           tuneGrid = svmTuneGrid,
-                           trControl = trainControl(method = "repeatedcv", repeats = 5,
-                                                    classProbs =  TRUE))
-                  } else {output <- caret::train(eq,data = trainData,
-                                                 method = "svmRadial",
-                                                 preProc = c("center", "scale"),
-                                                 tuneGrid = svmTuneGrid,
-                                                 trControl = trainControl(method = "repeatedcv", repeats = 5))
+        output <- caret::train(eq,data = trainData,
+                          method = "svmRadial",
+                          preProcess = preProcess,
+                          tuneGrid = svmTuneGrid,
+                          trControl = trainControl(
+                          method = resampling,
+                          number= if (is.null(Number)) {ifelse(resampling=="cv", 10, 25)} else {Number},
+                          repeats= if (is.null(Repeat)) {ifelse(resampling=="repeatedcv", 1, NA)} else {Repeat},
+                          savePredictions = TRUE,
+                          classProbs = ifelse(max(diff(unique(y)))==min(diff(unique(y))),TRUE,FALSE))
+                          )
 
-                                                    }
   } else {output <- caret::train(eq, data = trainData, method=method,
-                                tuneLength = tuneLength, trControl = trControl)  }
+                                 preProcess = preProcess,
+                          trControl = trainControl(
+                          method = resampling,
+                          number= if (is.null(Number)) {{ifelse(resampling=="cv", 10, 25)}} else {Number},
+                          repeats=if (is.null(Repeat)) {ifelse(resampling=="repeatedcv", 1, NA)} else {Repeat},
+                          savePredictions = TRUE,
+                          classProbs =  ifelse(max(diff(unique(y)))==min(diff(unique(y))),TRUE,FALSE)),
+                          tuneLength = ifelse(resampling== "none", 1, tuneLength)
+                          )
+  }
 
-  return(list(output=output,arOrder=arOrder,data=cbind(y,DF0),dataused=DF))
+  trained.Pred=output$pred[order(output$pred$rowIndex),]
+
+  return(list(output=output,arOrder=arOrder,data=cbind(y,DF0),dataused=DF,training.Pred=trained.Pred))
 
 }
 
