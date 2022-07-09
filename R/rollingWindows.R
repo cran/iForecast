@@ -1,16 +1,36 @@
 rollingWindows <- function(x,estimation="18m",by = "6m") {
-period=estimation
-by=by
-  periodLength = as.numeric(substr(period, 1, nchar(period) -
-                                     1))
+  x=timeSeries::as.timeSeries(x)
+  period=estimation
+  by=by
+  periodLength = as.numeric(substr(period,1, nchar(period)-1))
   periodUnit = substr(period, nchar(period), nchar(period))
   byLength = as.numeric(substr(by, 1, nchar(by) - 1))
   byUnit = substr(by, nchar(by), nchar(by))
-  stopifnot(periodUnit == "m")
-  stopifnot(byUnit == "m")
-  positions = time(timeSeries::as.timeSeries(x))
-  startPositions = unique(positions)
-  endPositions = unique(positions)
+  stopifnot(periodUnit %in% c("w","m"))
+  stopifnot(byUnit %in% c("w","m"))
+  stopifnot(periodUnit == byUnit)
+  positions = time(x)
+
+  if (periodUnit=="m") {
+
+    startPositions = unique(timeDate::timeFirstDayInMonth(positions))
+    endPositions = unique(timeDate::timeLastDayInMonth(positions))
+
+  } else {
+
+    ID1=ID2=NULL
+    for (i in unique(lubridate::year(x))) {
+      ID1=c(ID1, !duplicated(subset(lubridate::week(x),lubridate::year(x)==i)))
+
+      ID2=c(ID2, !duplicated(subset(lubridate::week(x),lubridate::year(x)==i),
+                             fromLast = TRUE))
+    }
+
+    startPositions = time(x)[ID1]
+    endPositions = time(x)[ID2]
+
+  }
+
   numberOfPositions = length(startPositions)
   startSeq <- seq(from = 1, to = (numberOfPositions - periodLength +
                                     1), by = byLength)
@@ -32,3 +52,5 @@ by=by
   }
   return(data)
 }
+
+

@@ -15,10 +15,10 @@ ttsAutoML(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30)
 
 \arguments{
   \item{y}{
-The time series vector of target variable, or the dependent variable, with \code{zoo} format, must have dimension. y can be either binary or continuous.
+The time series object of the target variable, or the dependent variable, with \code{timeSeries} or \code{zoo} format, must have dimension. y can be either binary or continuous. Time format must be "%Y-%m-%d".
 }
 
-  \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.
+  \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.Time format must be "%Y-%m-%d".
 }
 
 

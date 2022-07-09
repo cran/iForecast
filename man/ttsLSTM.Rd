@@ -24,10 +24,10 @@ ttsLSTM(y,
 
 \arguments{
   \item{y}{
-The time series vector of target variable, or the dependent variable, with \code{zoo} format, must have dimension. Currently, y can be both continuous and discrete.
+The time series object of the target variable, or the dependent variable, with \code{timeSeries} or \code{zoo} format, must have dimension. y can be both continuous and discrete.Time format must be "%Y-%m-%d".
 }
 
-  \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.
+  \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.Time format must be "%Y-%m-%d".
 }
 
 

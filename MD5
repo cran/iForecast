@@ -1,6 +1,6 @@
-0ac02322bd0cdba4835fcea896ef1ccf *DESCRIPTION
-21d110929d958c77fbff40237a38d314 *NAMESPACE
-fbfae1970d82c67832e1d67c8bd85899 *R/rollingWindows.R
+370dd771906ef749187b966536b83756 *DESCRIPTION
+b23258053c29e54ca74b84123d034a00 *NAMESPACE
+abc7b6e5a156dd87709d261700aa7ba9 *R/rollingWindows.R
 ca9e12e90a6a640b7b5e7b01453626da *R/ttsAutoML.R
 f824923b31b137e9ff47b8b195c9b80e *R/ttsCaret.R
 316d52697b715fb2af9a3da0e7c639d3 *R/ttsLSTM.R
@@ -11,7 +11,7 @@ f9c99a96327487921b480cb2c389960f *data/bc.rda
 43f1c3f49269af421567c632835fcdea *data/macrodata.rda
 3fe0ae96fcff69a22c2dcd64d3199e80 *man/data-sets.Rd
 2ae0cac3f266165ccd4c20f63da15606 *man/iForecast.Rd
-4bac143b9cf6b931b5cf531a70cd08f8 *man/rollingWindows.Rd
-c63bfd75a74da8b9d0a74b8fe5dc1977 *man/ttsAutoML.Rd
-851abd62f1dd224272ee4a22ed282206 *man/ttsCaret.Rd
-25df897594fc9c8e19079ad8695ca7b8 *man/ttsLSTM.Rd
+b4d0a1aa10835cbcb686ab0ec8f114f1 *man/rollingWindows.Rd
+85ae14d2aeee6e0c81c43327820f40e1 *man/ttsAutoML.Rd
+039f3621718737334f33eda54468a4e3 *man/ttsCaret.Rd
+ada9c93b3c5de251d5bff2ed40c349a7 *man/ttsLSTM.Rd

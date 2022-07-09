@@ -1,5 +1,5 @@
 exportPattern("^[[:alpha:]]+")
-import("caret","magrittr","zoo")
+import("caret","magrittr")
 importFrom("grDevices", "dev.new")
 importFrom("graphics", "abline", "grid", "lines", "rug", "text")
 importFrom("utils", "data")
