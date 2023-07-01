@@ -18,7 +18,7 @@ ttsAutoML(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30)
 The time series object of the target variable, or the dependent variable, with \code{timeSeries} or \code{zoo} format, must have dimension. y can be either binary or continuous. Time format must be "%Y-%m-%d".
 }
 
-  \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.Time format must be "%Y-%m-%d".
+  \item{x}{ The time series matrix of input variables, or the independent variables,  with \code{timeSeries} or \code{zoo} format. Time format must be "%Y-%m-%d".
 }
 
 
@@ -80,8 +80,8 @@ train.end<-"2008-12-01"
 #autoML <- ttsAutoML(y=dep, x=ind, train.end,arOrder=c(2,4),
 # xregOrder=c(0,1,3), maxSecs =30)
 #testData2 <- window(autoML$dataused,start="2009-01-01",end=end(autoML$data))
-#P1<-iForecast(Model=autoML,newdata=testData2,type="staticfit")
-#P2<-iForecast(Model=autoML,newdata=testData2,type="recursive")
+#P1<-iForecast(Model=autoML,newdata=testData2,type="static")
+#P2<-iForecast(Model=autoML,newdata=testData2,type="dynamic")
 
 #tail(cbind(testData2[,1],P1))
 #tail(cbind(testData2[,1],P2))

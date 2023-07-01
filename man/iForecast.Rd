@@ -23,7 +23,7 @@ Object of trained model.
 
 }
 
-\item{type}{ If type="staticfit", it computes the direct (static) forecasting values of insample model fit; if type="recursive", it computes the recursive (dynamic) forecasting values of insample model; for recursive forecasts, AR term is required.
+\item{type}{ If type="static", it computes the (static) forecasting values of insample model fit. If type="dynamic", it iteratively computes the multistep forecasting values given the insample estimated model. For dynamic forecasts, AR term is required.
 }
 
 }
@@ -55,13 +55,13 @@ dep <- macrodata[569:669,"unrate",drop=FALSE]
 ind <- macrodata[569:669,-1,drop=FALSE]
 train.end <- "2018-12-01"# Choosing the end dating of train
 
-models <- c("svm","rf","rpart")[3]
+models <- c("svm","rf","rpart")[1]
 type <- c("none","trend","season","both")[1]
-Caret <- ttsCaret(y=dep, x=ind, arOrder=c(1), xregOrder=c(1),
- method=models, tuneLength =1, train.end, type=type,resampling="cv")
- testData1 <- window(Caret$data,start="2019-01-01",end=end(Caret$data))
-P1 <- iForecast(Model=Caret,newdata=testData1,type="staticfit")
-P2 <- iForecast(Model=Caret,newdata=testData1,type="recursive")
+#Caret <- ttsCaret(y=dep, x=ind, arOrder=c(1), xregOrder=c(1),
+# method=models, tuneLength =1, train.end, type=type,resampling="cv",preProcess = #"center")
+# testData1 <- window(Caret$data,start="2019-01-01",end=end(Caret$data))
+#P1 <- iForecast(Model=Caret,newdata=testData1,type="static")
+#P2 <- iForecast(Model=Caret,newdata=testData1,type="dynamic")
 
 #tail(cbind(testData1[,1],P1))
 #tail(cbind(testData1[,1],P2))
@@ -80,8 +80,8 @@ test.start=as.character(rownames(dep))[as.integer(nrow(dep)*0.8)+1]
 #testData1=window(Caret$data,start=test.start,end=end(Caret$data))
 
 #head(Caret$dataused)
-#P1=iForecast(Model=Caret,newdata=testData1,type="staticfit")
-#P2=iForecast(Model=Caret,newdata=testData1,type="recursive")
+#P1=iForecast(Model=Caret,newdata=testData1,type="static")
+#P2=iForecast(Model=Caret,newdata=testData1,type="dynamic")
 
 #tail(cbind(testData1[,1],P1),10)
 #tail(cbind(testData1[,1],P2),10)

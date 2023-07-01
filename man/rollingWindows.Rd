@@ -18,11 +18,11 @@ rollingWindows(x,estimation="18m",by = "6m")
   }
 
 
-  \item{estimation}{The range of insample estimation period, the default is 18 months(18m), where the k-fold cross-section is performed. Week is also supported (see example).
+  \item{estimation}{The range of insample estimation period, the default is 18 months(18m), where the k-fold cross-section is performed. Week and day are also supported  (see example).
 
 }
 
- \item{by}{The range of out-of-sample validation/testing period, the default is 6 months(6m).Week is also supported (see example).
+ \item{by}{The range of out-of-sample validation/testing period, the default is 6 months(6m).Week and day are also supported (see example).
 
 }
 
@@ -54,13 +54,17 @@ timeframe=rollingWindows(y,estimation="300m",by="6m")
 FROM=timeframe$from
 TO=timeframe$to
 
-
 data(ES_Daily)
 y=ES_Daily[,1,drop=FALSE]
 timeframe=rollingWindows(y,estimation  ="60w",by="1w")
-#estimation="60w", because ES_Daily is daily(obs=60x5)
+#60 weeks as estimation windowand move by 1 week.
+
 FROM=timeframe$from
 TO=timeframe$to
+
+y=ES_Daily[,1,drop=FALSE]
+timeframe=rollingWindows(y,estimation  ="250d",by="1d")
+#250-day as estimation window and move by 1 days.
 
 }
 

@@ -24,10 +24,10 @@ ttsLSTM(y,
 
 \arguments{
   \item{y}{
-The time series object of the target variable, or the dependent variable, with \code{timeSeries} or \code{zoo} format, must have dimension. y can be both continuous and discrete.Time format must be "%Y-%m-%d".
+The time series object of the target variable, or the dependent variable,  with \code{timeSeries} or \code{zoo} format, must have dimension. y can be both continuous and discrete.Time format must be "%Y-%m-%d".
 }
 
-  \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.Time format must be "%Y-%m-%d".
+  \item{x}{ The time series matrix of input variables, or the independent variables,  with \code{timeSeries} or \code{zoo} format. Time format must be "%Y-%m-%d".
 }
 
 
@@ -102,8 +102,8 @@ train.end<-"2008-12-01"
 # batch.range=2:7,batch.size=NULL)
 
 #testData3<-window(LSTM$dataused,start="2009-01-01",end=end(LSTM$data))
-#P1<-iForecast(Model=LSTM,newdata=testData3,type="staticfit")
-#P2<-iForecast(Model=LSTM,newdata=testData3,type="recursive")
+#P1<-iForecast(Model=LSTM,newdata=testData3,type="static")
+#P2<-iForecast(Model=LSTM,newdata=testData3,type="dynamic")
 
 #tail(cbind(testData3[,1],P1,P2))
 

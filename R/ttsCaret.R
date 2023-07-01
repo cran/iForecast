@@ -92,7 +92,7 @@ if (p==0) {
   resampling=resampling
   if (method == "svm") {
     ### finding optimal value of a tuning parameter
-    sigDist <- kernlab::sigest(eq,data = trainData, frac = 0.75)
+    sigDist <- kernlab::sigest(eq,data = trainData, frac = 0.5)
     ### creating a grid of two tuning parameters, .sigma comes from the earlier line. we are trying to find best value of .C
     svmTuneGrid <- data.frame(.sigma = rep(sigDist[2],10), .C = 2^(-2:7))
 #    set.seed(1056)
@@ -108,8 +108,26 @@ if (p==0) {
                           classProbs = ifelse(max(diff(unique(y)))==min(diff(unique(y))),TRUE,FALSE))
                           )
 
+  } else if (method == "gbm") {
+    gbmGrid <- expand.grid(interaction.depth = seq(1, 7, by = 2),
+                            n.trees = seq(50, 750, by = 50),
+                            shrinkage = c(0.01, 0.1),
+                           n.minobsinnode = 15)
+
+    output <- caret::train(eq,data = trainData,
+                           method = method,
+                           preProcess = preProcess,
+                           tuneGrid = gbmGrid,
+                           verbose=FALSE,
+                           trControl = trainControl(
+                           method = resampling,
+                           number= if (is.null(Number)) {ifelse(resampling=="cv", 10, 25)} else {Number},
+                           repeats= if (is.null(Repeat)) {ifelse(resampling=="repeatedcv", 1, NA)} else {Repeat},
+                           savePredictions = TRUE,
+                           classProbs = ifelse(max(diff(unique(y)))==min(diff(unique(y))),TRUE,FALSE)))
   } else {output <- caret::train(eq, data = trainData, method=method,
-                                 preProcess = preProcess,
+                          preProcess = preProcess,
+						              trace=FALSE,
                           trControl = trainControl(
                           method = resampling,
                           number= if (is.null(Number)) {{ifelse(resampling=="cv", 10, 25)}} else {Number},

@@ -1,6 +1,6 @@
 iForecast <- function(Model,newdata,type) {
 
-   if (type == "recursive" & min(Model$arOrder)== 0) {print("AR Order cannot be 0 for recursive forecasts")
+   if (type == "dynamic" & min(Model$arOrder)== 0) {print("AR Order cannot be 0 for recursive forecasts")
 
    }  else {
 
@@ -34,7 +34,7 @@ iForecast <- function(Model,newdata,type) {
   arOrder <- Model$arOrder
   Y.check=Model$data[,1]
 
-  if (type=="staticfit") {
+  if (type=="static") {
   # Static multistep forecasting by direct fit
     if (max(diff(unique(Y.check)))==min(diff(unique(Y.check)))) {
       static.pred <- as.matrix(as.integer(predict(output,testData,type="raw"))-1)
@@ -44,14 +44,14 @@ iForecast <- function(Model,newdata,type) {
       static.pred=cbind(static.pred,static.pred.prob )
       } else {
   static.pred <- as.matrix(predict(output,testData))
-  colnames(static.pred) <- "staticfit"
+  colnames(static.pred) <- "static"
   }
 
   rownames(static.pred) <- rownames(testData)
   prediction <- timeSeries::as.timeSeries(static.pred)
 
 
-  } else if (type=="recursive") {  # Recursive Forecasts
+  } else if (type=="dynamic") {  # Iterative Forecasts
 
     if (min(arOrder) == 0L) {print("AR Order cannot be 0 for recursive forecasts.")
 
@@ -120,7 +120,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
     recursive.pred=as.matrix(recursive.pred[-1])
   rownames(recursive.pred)=rownames(testData)
   prediction=timeSeries::as.timeSeries(recursive.pred)
-  colnames(prediction)="recursive"
+  colnames(prediction)="dynamic"
 }
   }
   }
@@ -140,7 +140,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
   arOrder=Model$arOrder
   test_h2o=h2o::as.h2o(tibble::as_tibble(testData))
 
-  if (type=="staticfit") {
+  if (type=="static") {
     # Static multistep forecasting by direct fit
     Pred2.dm=as.matrix(h2o::h2o.predict(automl_leader, newdata = test_h2o))
     static.pred=Pred2.dm
@@ -148,9 +148,9 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
     colnames(static.pred)="Prediction"
     prediction=timeSeries::as.timeSeries(static.pred)
 
-    colnames(prediction)="staticfit"
+    colnames(prediction)="static"
 
-  } else if (type=="recursive") {
+  } else if (type=="dynamic") {
 
     # Recursive Forecasts
     # Predict test data: Recursive Forecasts
@@ -192,7 +192,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
     }
     prediction=as.matrix(dynPred[-1])
     rownames(prediction)=rownames(testData)
-    colnames(prediction)="recursive"
+    colnames(prediction)="dynamic"
     prediction=timeSeries::as.timeSeries(prediction)
 
   }
@@ -227,7 +227,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
     rownames(prediction)=rownames(testData)
     prediction=timeSeries::as.timeSeries(prediction)
 
-    colnames(prediction)="staticfit"
+    colnames(prediction)="static"
 
   } else if (type=="recursive") {
 
@@ -274,7 +274,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
     rownames(prediction)=rownames(testData)
     prediction=timeSeries::as.timeSeries(prediction)
 
-    colnames(prediction)="recursive"
+    colnames(prediction)="dynamic"
 
     }
   }

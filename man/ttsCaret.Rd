@@ -29,10 +29,10 @@ ttsCaret(
 
 \arguments{
   \item{y}{
-The time series object of the target variable, or the dependent variable, with \code{timeSeries} or \code{zoo} format, must have dimension. y can be either binary or continuous.Time format must be "%Y-%m-%d".
+The time series object of the target variable, or the dependent variable,  with \code{timeSeries} or \code{zoo} format, must have dimension. y can be either binary or continuous.Time format must be "%Y-%m-%d".
 }
 
-  \item{x}{ The time series matrix of input variables, or the independent variables, with \code{zoo} format.Time format must be "%Y-%m-%d".
+  \item{x}{ The time series matrix of input variables, or the independent variables,  with \code{timeSeries} or \code{zoo} format.Time format must be "%Y-%m-%d".
 }
 
   \item{method}{The train_model_list of \code{caret}. While using this, make sure that the method allows regression. Methods in c("svm","rf","rpart","gamboost","BstLm","bstSm","blackboost") are feasible.
@@ -110,8 +110,8 @@ Caret <- ttsCaret(y=dep, x=NULL, arOrder=c(1), xregOrder=c(1),
  method=models, tuneLength =1, train.end, type=type,
  resampling=c("boot","cv","repeatedcv")[2],preProcess = "center")
  testData1 <- window(Caret$data,start="2019-01-01",end=end(Caret$data))
-P1 <- iForecast(Model=Caret,newdata=testData1,type="staticfit")
-P2 <- iForecast(Model=Caret,newdata=testData1,type="recursive")
+P1 <- iForecast(Model=Caret,newdata=testData1,type="static")
+P2 <- iForecast(Model=Caret,newdata=testData1,type="dynamic")
 
 tail(cbind(testData1[,1],P1,P2))
 
@@ -128,8 +128,8 @@ tail(cbind(testData1[,1],P1,P2))
 # method=models, tuneLength =10, train.end, type=type,
 # resampling=c("boot","cv","repeatedcv")[2],preProcess = "center")
 #testData1<-window(Caret$data,start="2009-01-01",end=end(Caret$data))
-#P1<-iForecast(Model=Caret,newdata=testData1,type="staticfit")
-#P2<-iForecast(Model=Caret,newdata=testData1,type="recursive")
+#P1<-iForecast(Model=Caret,newdata=testData1,type="static")
+#P2<-iForecast(Model=Caret,newdata=testData1,type="dynamic")
 
 }
 
