@@ -47,26 +47,26 @@ iForecast <- function(Model,newdata,type) {
   colnames(static.pred) <- "static"
   }
 
-  rownames(static.pred) <- rownames(testData)
+  rownames(static.pred) <- as.character(time(testData))
   prediction <- timeSeries::as.timeSeries(static.pred)
 
 
-  } else if (type=="dynamic") {  # Iterative Forecasts
+  } else if (type=="dynamic") {  # Multistep Forecasts
 
     if (min(arOrder) == 0L) {print("AR Order cannot be 0 for recursive forecasts.")
 
     } else {
-  DF0 <- Model$data
+  DF0 <- Model$dataused
   dateID <- as.character(time(DF0))
-  test.start <- dateID[which(dateID==as.character(start(testData)))-1]
+  test.start <- dateID[which(dateID==as.character(start(testData)))]
   test.end <- end(testData)
 
     ARX=window(DF0,start=test.start,end=test.end)
 
-    ar.names=names(ARX)[grep(names(ARX),pattern="^ar+")]
+    ar.names=colnames(ARX)[grep(colnames(ARX),pattern="^ar+")]
 
-    LY.names=names(testData)[grep(names(testData),pattern="^ar+")]
-    LX.names=names(testData)[-grep(names(testData),pattern="^ar+")]
+    LY.names=colnames(testData)[grep(colnames(testData),pattern="^ar+")]
+    LX.names=colnames(testData)[-grep(colnames(testData),pattern="^ar+")]
 
     plags=length(ar.names)
     ahead=nrow(ARX)
@@ -92,9 +92,11 @@ iForecast <- function(Model,newdata,type) {
 
       recursive.pred=c(recursive.pred,y0)
       }
+
+
       recursive.pred=as.matrix(recursive.pred[-1])
 
-    rownames(recursive.pred)=rownames(testData)
+    rownames(recursive.pred)=as.character(time(testData))
     prediction=timeSeries::as.timeSeries(recursive.pred)
 
   colnames(prediction)="class"
@@ -104,7 +106,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
 
 
       } else {
-
+#continuous case
     for (i in 1:ahead) {#i=1
       if(length(LX.names)==0) {
         y0=as.numeric(predict(output,ARX[i,]))
@@ -117,8 +119,8 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
 
       recursive.pred=c(recursive.pred,y0)
     }
-    recursive.pred=as.matrix(recursive.pred[-1])
-  rownames(recursive.pred)=rownames(testData)
+    recursive.pred=as.matrix(recursive.pred)
+  rownames(recursive.pred)=as.character(time(testData))
   prediction=timeSeries::as.timeSeries(recursive.pred)
   colnames(prediction)="dynamic"
 }
@@ -144,7 +146,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
     # Static multistep forecasting by direct fit
     Pred2.dm=as.matrix(h2o::h2o.predict(automl_leader, newdata = test_h2o))
     static.pred=Pred2.dm
-    rownames(static.pred)=rownames(testData)
+    rownames(static.pred)=as.character(time(testData))
     colnames(static.pred)="Prediction"
     prediction=timeSeries::as.timeSeries(static.pred)
 
@@ -159,7 +161,7 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
     } else {
 
 
-    DF0=Model$data
+    DF0=Model$dataused
     dateID=as.character(time(DF0))
     test.start=dateID[which(dateID==as.character(start(newdata)))-1]
     test.end=end(newdata)
@@ -190,8 +192,8 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
       dynPred=rbind(dynPred,as.numeric(as.matrix(y0)))
 
     }
-    prediction=as.matrix(dynPred[-1])
-    rownames(prediction)=rownames(testData)
+    prediction=as.matrix(dynPred)
+    rownames(prediction)=as.character(time(testData))
     colnames(prediction)="dynamic"
     prediction=timeSeries::as.timeSeries(prediction)
 
@@ -224,19 +226,19 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
 
   if (type=="staticfit") {
     prediction <- as.matrix(predict(model, x.test, batch_size = batch.size))
-    rownames(prediction)=rownames(testData)
+    rownames(prediction)=as.character(time(testData))
     prediction=timeSeries::as.timeSeries(prediction)
 
     colnames(prediction)="static"
 
-  } else if (type=="recursive") {
+  } else if (type=="dynamic") {
 
     # Recursive Forecasts
     # Predict test data: Recursive Forecasts
-    if (min(arOrder) == 0L) {print("AR Order cannot be 0 for recursive forecasts.")
+    if (min(arOrder) == 0L) {print("AR Order cannot be 0 for multistep forecasts.")
 
     } else {
-    DF0=Model$data
+    DF0=Model$dataused
     dateID=as.character(time(DF0))
     test.start=dateID[which(dateID==as.character(start(testData)))-1]
     test.end=end(testData)
@@ -270,8 +272,8 @@ prediction=cbind(prediction,recursive.pred.prob[-1,])
       prediction=c(prediction,y0)
 
     }
-    prediction=as.matrix(prediction[-1])
-    rownames(prediction)=rownames(testData)
+    prediction=as.matrix(prediction)
+    rownames(prediction)=as.character(time(testData))
     prediction=timeSeries::as.timeSeries(prediction)
 
     colnames(prediction)="dynamic"

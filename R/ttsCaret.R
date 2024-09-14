@@ -1,4 +1,4 @@
-ttsCaret <- function(y,x=NULL, method,train.end,arOrder=2,xregOrder=0,
+tts.caret <- function(y,x=NULL, method,train.end,arOrder=2,xregOrder=0,
                      type,tuneLength=10,preProcess = NULL,resampling="boot",
                      Number=NULL,Repeat=NULL) {
 

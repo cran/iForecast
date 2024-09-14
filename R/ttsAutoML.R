@@ -1,7 +1,7 @@
-ttsAutoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
+tts.autoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
 #  if (!is.zoo(y)) {print("The data had better be a zoo object.")}
 
-  Sys.setlocale(category = "LC_ALL", locale = "English_United States.1252")
+  suppressMessages(Sys.setlocale(category = "LC_ALL", locale = "English_United States.1252"))
   h2o::h2o.init()        # Fire up h2o
   invisible(h2o::h2o.no_progress()) # Turn off progress bars
 
@@ -19,7 +19,9 @@ ttsAutoML <-function(y,x=NULL,train.end,arOrder=2,xregOrder=0,maxSecs=30) {
 
 
   if (is.null(train.end)) {print("The train.end must be specified.") }
-
+  Yr=substr(train.end,1,4)
+  Mon=substr(train.end,6,7)
+  train.end=paste(Yr,Mon,"01",sep="-")
   train.start=start(y)
   t0=which(as.character(time(y))==train.end)
   test.start=as.character(time(y))[t0+1]
