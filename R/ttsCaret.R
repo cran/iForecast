@@ -70,7 +70,8 @@ if (p==0) {
   } else {DF0 <- cbind(ar0,X,trend)}
 
 
-  if (type=="trend") {DF<-cbind(DF,trend)} else if (type=="sesaon") {DF<-cbind(DF,seasonDummy)
+  if (type=="trend") {DF<-cbind(DF,trend)
+  } else if (type=="season") {DF<-cbind(DF,seasonDummy)
   } else if (type=="both") {DF<-cbind(DF,trend,seasonDummy)
   } else {DF <- DF}
 

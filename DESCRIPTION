@@ -1,8 +1,8 @@
 Package: iForecast
 Type: Package
 Title: Machine Learning Time Series Forecasting
-Version: 1.0.8
-Date: 2024-09-14
+Version: 1.0.9
+Date: 2024-10-31
 Authors@R: person(given = "Ho",
                     family = "Tsung-wu",
                     role = c("aut", "cre"),
@@ -18,6 +18,6 @@ Imports: magrittr
 Suggests: data.table, forecast, h2o, kernlab, lubridate, tibble,
         timeSeries, timeDate, timetk, zoo
 NeedsCompilation: no
-Packaged: 2024-09-14 07:57:27 UTC; badal
+Packaged: 2024-10-31 07:39:56 UTC; badal
 Repository: CRAN
-Date/Publication: 2024-09-14 08:10:02 UTC
+Date/Publication: 2024-10-31 15:40:08 UTC
