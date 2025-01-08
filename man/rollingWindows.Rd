@@ -9,20 +9,19 @@
 It extracts time stamp from a timeSeries object and separates the time into in-sample training and out-of-sample validation ranges.
 }
 \usage{
-rollingWindows(x,estimation="18m",by = "6m")
+rollingWindows(x,estimation="18m",by = "1m")
 }
 
 \arguments{
 
-  \item{x}{The time series matrix (vector) with \code{timeSeries} or \code{zoo} format of "%Y-%m-%d".
+  \item{x}{The time series object with \code{timeSeries}, \code{xts}, or \code{zoo} format of "%Y-%m-%d".
   }
 
-
-  \item{estimation}{The range of insample estimation period, the default is 18 months(18m), where the k-fold cross-section is performed. Week and day are also supported  (see example).
+  \item{estimation}{The range of insample estimation period, the default is 18 months(18m), where the k-fold cross-section is performed. Quarter, week and day are also supported (see example).
 
 }
 
- \item{by}{The range of out-of-sample validation/testing period, the default is 6 months(6m).Week and day are also supported (see example).
+ \item{by}{The range of out-of-sample validation/testing period, the default is 6 months(6m).Quarter, week and day are also supported (see example).
 
 }
 
@@ -57,14 +56,25 @@ TO=timeframe$to
 data(ES_Daily)
 y=ES_Daily[,1,drop=FALSE]
 timeframe=rollingWindows(y,estimation  ="60w",by="1w")
-#60 weeks as estimation windowand move by 1 week.
+#60 weeks(300+ days) as estimation window and move by 1 week(5+ days).
 
 FROM=timeframe$from
 TO=timeframe$to
 
 y=ES_Daily[,1,drop=FALSE]
-timeframe=rollingWindows(y,estimation  ="250d",by="1d")
-#250-day as estimation window and move by 1 days.
+timeframe=rollingWindows(y,estimation  ="250d",by="10d")
+#250-day as estimation window and move by 10 days.
+
+
+# simulated quarterly data
+tmp0=ts(rnorm(800),start=c(1900,1),freq=4)
+tmp1=timeSeries::as.timeSeries(tmp0)
+tmp2=zoo::as.zoo(tmp0)
+tmp3=xts::as.xts(tmp0)
+timeframe=rollingWindows(x=tmp3,estimation ="100q",by="12q")
+FROM=timeframe$from
+TO=timeframe$to
+
 
 }
 
