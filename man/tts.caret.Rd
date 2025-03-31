@@ -116,7 +116,7 @@ output <- tts.caret(y=dep,x=NULL, arOrder=c(1), xregOrder=c(1),
 
 testData1 <- window(output$dataused,start="2019-01-01",end=end(output$dataused))
 P1 <- iForecast(Model=output,Type="static",newdata=testData1)
-P2 <- iForecast(Model=output,Type="dynamic",a.head=nrow(testData1))
+P2 <- iForecast(Model=output,Type="dynamic",n.ahead=nrow(testData1))
 
 tail(cbind(testData1[,1],P1,P2))
 
@@ -134,7 +134,7 @@ tail(cbind(testData1[,1],P1,P2))
 # resampling=c("boot","cv","repeatedcv")[2],preProcess = "center")
 #testData1<-window(output$dataused,start="2009-01-01",end=end(output$dataused))
 #P1<-iForecast(Model=output,Type="static",newdata=testData1)
-#P2<-iForecast(Model=output,Type="dynamic",a.head=nrow(testData1))
+#P2<-iForecast(Model=output,Type="dynamic",n.ahead=nrow(testData1))
 
 }
 

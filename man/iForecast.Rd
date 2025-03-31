@@ -10,7 +10,7 @@ It generates both the static and recursive time series plots of machine learning
 }
 
 \usage{
-iForecast(Model,newdata,Type,a.head)
+iForecast(Model,newdata,Type,n.ahead)
 }
 
 \arguments{
@@ -26,7 +26,7 @@ Object of trained model.
 \item{Type}{If Type="static", it computes the (static) forecasting values of insample model fit. If Type="dynamic", it recursively computes the forecasting values ahead.
 }
 
-\item{a.head}{For Type="dynamic", it is the number of forecasting periods ahead. Not required if type="static".
+\item{n.ahead}{For Type="dynamic", it is the number of forecasting periods ahead. Not required if type="static".
 }
 }
 
@@ -65,7 +65,7 @@ type <- c("none","trend","season","both")[1]
 
 # testData1 <- window(output$dataused,start="2019-01-01",end=end(output$dataused))
 #P1=iForecast(Model=output,Type="static",newdata=testData1)
-#P2=iForecast(Model=output,Type="dynamic",a.head=7)
+#P2=iForecast(Model=output,Type="dynamic",n.ahead=7)
 
 #tail(cbind(testData1[,1],P1))
 #tail(cbind(testData1[,1],P2))
@@ -85,7 +85,7 @@ test.start=as.character(rownames(dep))[as.integer(nrow(dep)*0.8)+1]
 
 #head(output$dataused)
 #P1=iForecast(Model=output,Type="static",newdata=testData1)
-#P2=iForecast(Model=output,Type="dynamic",a.head=7)
+#P2=iForecast(Model=output,Type="dynamic",n.ahead=7)
 
 #tail(cbind(testData1[,1],P1),10)
 #tail(cbind(testData1[,1],P2),10)

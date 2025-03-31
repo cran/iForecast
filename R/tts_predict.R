@@ -1,4 +1,4 @@
-iForecast <- function(Model,newdata=NULL,Type,a.head=NULL) {
+iForecast <- function(Model,newdata=NULL,Type,n.ahead=NULL) {
 
   if (Type == "dynamic" & max(Model$arOrder)== 0) {print("AR Order cannot be 0 for recursive forecasts")
 
@@ -7,11 +7,11 @@ iForecast <- function(Model,newdata=NULL,Type,a.head=NULL) {
 
     if (class(Model$output)[1]=="train") {
 
-      prediction  <-  .predict_caret(Model, newdata,Type=Type,a.head)
+      prediction  <-  .predict_caret(Model, newdata,Type=Type,n.ahead)
 
     } else if (substr(class(Model$output)[1],1,3) == "H2O") {
 
-      prediction  <-  .predict_AutoML(Model, newdata,Type=Type,a.head)
+      prediction  <-  .predict_AutoML(Model, newdata,Type=Type,n.ahead)
 
     } #else if (class(Model$output)[1]=="keras.engine.sequential.Sequential") {
 
@@ -25,7 +25,7 @@ iForecast <- function(Model,newdata=NULL,Type,a.head=NULL) {
 
 }
 
-.predict_caret <- function(Model, newdata, Type,a.head) {
+.predict_caret <- function(Model, newdata, Type,n.ahead) {
 
   DF <- Model$dataused #used data structure
   DF0 <- Model$data #complete data structure
@@ -34,14 +34,14 @@ iForecast <- function(Model,newdata=NULL,Type,a.head=NULL) {
   Y.check=DF[,1,drop=FALSE]
   X.check=grep(colnames(Model$dataused),pattern="_L+")
   train.end=Model$train.end
-  
-  
+
+
 ##== Static model fit
 if (Type == "static") {
   testData=newdata
-  
+
 #classification case
-    if (length(unique(Y.check)) <5) { 
+    if (length(unique(Y.check)) <5) {
       static.pred <- as.matrix(as.integer(predict(output,testData,type="raw")))
       colnames(static.pred) <- "modelFit"
             if (output$method=="svmRadial") {
@@ -52,7 +52,7 @@ if (Type == "static") {
             }
 
 # continuous case
-    } else { 
+    } else {
       static.pred <- as.matrix(predict(output,testData))
       colnames(static.pred) <- "modelFit"
     }
@@ -60,17 +60,17 @@ if (Type == "static") {
 prediction <- static.pred
 rownames(prediction)=rownames(as.matrix(testData))
 
-    
-    
+
+
 ##== Dynamic/Recursive Forecasts
-  } else { 
+  } else {
 
   if (max(arOrder) == 0L | is.null(arOrder)) {stop("arOrder is required for dynamic forecasts.")}
-  
+
   if (length(X.check)!=0L) {stop("dynamic forecast allows NO covariates, except time dummies.")  }
-  
-  if (is.null(a.head)) {stop("dynamic forecast must specify steps to forecast ahead")  }
-  
+
+  if (is.null(n.ahead)) {stop("dynamic forecast must specify steps to forecast ahead")  }
+
       ar.names=colnames(DF0)[-1][grep(colnames(DF0)[-1],pattern="^ar+")]
 
       arUSED.names=colnames(DF)[-1][grep(colnames(DF)[-1],pattern="^ar+")]
@@ -83,8 +83,8 @@ rownames(prediction)=rownames(as.matrix(testData))
 
 
       # Create time dummies
-      trend=(trend0+1):(trend0+a.head)
-      
+      trend=(trend0+1):(trend0+n.ahead)
+
       if (diff(range(lubridate::day(DF)))<12) { #Regular frequency
         yr=as.numeric(substr(train.end,1,4))
         mon=as.numeric(substr(train.end,6,7))
@@ -111,14 +111,14 @@ rownames(prediction)=rownames(as.matrix(testData))
 
 
 
-      
+
 ## Compute Forecasts
       recursive.pred=NULL
-      recursive.pred.prob=NULL      
+      recursive.pred.prob=NULL
 ## Classification model
-      if (length(unique(Y.check)) <5) { #check if classification
+      if (length(unique(Y.check)) <6) { #check if classification
 
-        for (i in 1:a.head) {#i=1
+        for (i in 1:n.ahead) {#i=1
 
           if (diff(range(lubridate::month(DF)))<12) {#Regular frequency
               if (Model$TD == "none") {
@@ -142,7 +142,7 @@ rownames(prediction)=rownames(as.matrix(testData))
               }
 
           } else { #Irregular frequency
-            if (Model$TD == c("none","season")) {
+            if (Model$TD %in% c("none","season")) {
               newData=ARs[,arUSED.names]
 
               if (output$method=="svmRadial") {
@@ -181,12 +181,12 @@ if (output$method=="svmRadial") {
 
 
 } #End of i loop
-        
+
         if (output$method=="svmRadial") {
           recursive.pred=as.matrix(recursive.pred)
           prediction=recursive.pred
           colnames(prediction)="recursive"
-          
+
         } else {
         recursive.pred=as.matrix(recursive.pred)
         prediction=recursive.pred
@@ -196,11 +196,11 @@ if (output$method=="svmRadial") {
         prediction=cbind(prediction,recursive.pred.prob)
         }
 
-        
+
 
 ## Continuous case
       } else {
-        for (i in 1:a.head) { #i=1
+        for (i in 1:n.ahead) { #i=1
 
           if (diff(range(lubridate::day(DF)))<12) { #Regular frequency
               if (Model$TD == "none") {
@@ -248,47 +248,47 @@ if (output$method=="svmRadial") {
 
 
 
-.predict_AutoML <- function(Model,newdata,Type,a.head){
+.predict_AutoML <- function(Model,newdata,Type,n.ahead){
 
   DF <- Model$dataused #used data structure
   DF0 <- Model$data   #complete data structure
-  
-  
+
+
   automl_leader=Model$output
   arOrder=Model$arOrder
   Y.check=DF$y
   X.check=grep(colnames(DF),pattern="_L+")
   train.end=Model$train.end
-  
+
 # Static forecasting
 if (Type == "static") {
-    
+
       testData=h2o::as.h2o(newdata)
-     
+
       #Classification case
-      if(length(unique(Y.check))<5) { 
-        
+      if(length(unique(Y.check))<5) {
+
         Pred2.dm=as.matrix(h2o::h2o.predict(automl_leader,
                                             newdata = testData))
-    
+
        prediction=apply(Pred2.dm,2,as.double)
        colnames(prediction)=colnames(Pred2.dm)
-     
+
        #Continuous case
-      } else { 
+      } else {
         Pred2.dm=h2o::h2o.predict(automl_leader,
                                   newdata =testData)
         prediction=as.matrix(Pred2.dm)
         colnames(prediction)="Prediction"
         colnames(prediction)="modelFit"
       }
-      
+
 rownames(prediction)=as.character(rownames(newdata))
 prediction=timeSeries::as.timeSeries(prediction)
 #===== End of static forecast
 
 ##== Dynamic/Recursive Forecasts
-} else { 
+} else {
 
 
 
@@ -296,7 +296,7 @@ prediction=timeSeries::as.timeSeries(prediction)
 
     if (length(X.check)!=0L) {stop("dynamic forecast allows NO covariates, except time dummies.")  }
 
-    if (is.null(a.head)) {stop("dynamic forecast must specify steps to forecast ahead")  }
+    if (is.null(n.ahead)) {stop("dynamic forecast must specify steps to forecast ahead")  }
 
     ar.names=colnames(DF0)[-1][grep(colnames(DF0)[-1],pattern="^ar+")]
 
@@ -309,7 +309,7 @@ prediction=timeSeries::as.timeSeries(prediction)
     colnames(ARs) <-ar.names
 
     # Create time dummies
-    trend=(trend0+1):(trend0+a.head)
+    trend=(trend0+1):(trend0+n.ahead)
     if (diff(range(lubridate::day(DF)))<12) { #Check Regular frequency
       yr=as.numeric(substr(train.end,1,4))
       mon=as.numeric(substr(train.end,6,7))
@@ -337,7 +337,7 @@ prediction=timeSeries::as.timeSeries(prediction)
 
 
  dynPred=NULL
- for (i in 1:a.head) {# start of for loop, i=1
+ for (i in 1:n.ahead) {# start of for loop, i=1
         if (diff(range(lubridate::day(DF)))<12) { #Check Regular frequency
               if(Model$TD == "none") {
                 newData=h2o::as.h2o(ARs[,arUSED.names])
@@ -359,27 +359,27 @@ prediction=timeSeries::as.timeSeries(prediction)
         }
 
         dynPred=rbind(dynPred,as.matrix(y0))
-        
+
         if (length(unique(Y.check))<5) {
           ARs=cbind(as.numeric(y0[1,1]),ARs[,-length(ar.names)])
           colnames(ARs) <-ar.names
-          
+
         } else {
-          
+
         ARs=cbind(y0,ARs[,-length(ar.names)])
         colnames(ARs) <-ar.names}
 
 } #end of for loop
 
- 
+
        if (length(unique(Y.check))<5) {
          prediction=apply(dynPred,2,as.double)
          colnames(prediction)=colnames(dynPred)
-         
+
        } else {
             prediction=as.matrix(dynPred)
             colnames(prediction)="recursive"
-            
+
             }
  prediction
 

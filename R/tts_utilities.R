@@ -82,7 +82,7 @@ if(is.null(x)) {
 
 }
 
-  #4. Dummies for time features
+#Step 4. Dummies for time features
   trend <- seq(nrow(y))
 
   if (diff(range(lubridate::day(DF)))<12) { #regular data

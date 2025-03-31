@@ -91,7 +91,7 @@ train.end<-"2008-12-01"
 
 #testData2 <- window(autoML$dataused,start="2009-01-01",end=end(autoML$dataused))
 #P1<-iForecast(Model=autoML,Type="static",newdata=testData2)
-#P2<-iForecast(Model=autoML,Type="dynamic",a.head=nrow(testData2))
+#P2<-iForecast(Model=autoML,Type="dynamic",n.ahead=nrow(testData2))
 
 #tail(cbind(testData2[,1],P1))
 #tail(cbind(testData2[,1],P2))
